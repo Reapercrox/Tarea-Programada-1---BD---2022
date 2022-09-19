@@ -127,6 +127,7 @@ CREATE TABLE [dbo].[Propiedades](
  [idTipoPropiedad] [int] NOT NULL,
  [ValorPropiedad] [money] NOT NULL,
  [FechaRegistro] [date] NOT NULL,
+ 
 
 CONSTRAINT [PK_Propiedades] PRIMARY KEY CLUSTERED (
 
@@ -417,4 +418,19 @@ REFERENCES [dbo].[Propiedades] ([id])
 GO
 
 ALTER TABLE [dbo].[Factura] CHECK CONSTRAINT [FK_Propiedad]
+GO
+
+-----/ Añadir nueva conexion /-----
+ALTER TABLE [dbo].[Propiedades]
+ADD [idUsuario] [int] NOT NULL
+GO
+
+-----* Script ligar tablas [Propiedades]|[TipoPropiedad] *-----
+
+ALTER TABLE [dbo].[Propiedades] WITH CHECK ADD CONSTRAINT [FK_Usuario_Prop]
+FOREIGN KEY([idUsuario])
+REFERENCES [dbo].[Usuario] ([id])
+GO
+
+ALTER TABLE [dbo].[Propiedades] CHECK CONSTRAINT [FK_Usuario_Prop]
 GO
