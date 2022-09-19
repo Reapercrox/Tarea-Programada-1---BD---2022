@@ -332,12 +332,12 @@ GO
 
 -----* Script ligar tablas [PropiedadxConceptoCobro]|[ConceptoCobro] *-----
 
-ALTER TABLE [dbo].[PropiedadxConceptoCobro] WITH CHECK ADD CONSTRAINT [FK_Prop_CC]
+ALTER TABLE [dbo].[PropiedadxConceptoCobro] WITH CHECK ADD CONSTRAINT [FK_CC]
 FOREIGN KEY([idConceptoCobro])
 REFERENCES [dbo].[ConceptoCobro] ([id])
 GO
 
-ALTER TABLE [dbo].[PropiedadxConceptoCobro] CHECK CONSTRAINT [FK_Prop_CC]
+ALTER TABLE [dbo].[PropiedadxConceptoCobro] CHECK CONSTRAINT [FK_CC]
 GO
 
 -----/ Script creacion de tablas [CCAgua] /-----
@@ -367,7 +367,7 @@ CONSTRAINT [PK_CCAgua] PRIMARY KEY CLUSTERED (
 	[PRIMARY] 
 GO
 
------* Script ligar tablas [PropiedadxConceptoCobro]|[ConceptoCobro] *-----
+-----* Script ligar tablas [CCAgua]|[ConceptoCobro] *-----
 
 ALTER TABLE [dbo].[CCAgua] WITH CHECK ADD CONSTRAINT [FK_CCAgua]
 FOREIGN KEY([id])
