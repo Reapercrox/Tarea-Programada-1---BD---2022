@@ -368,6 +368,12 @@ CONSTRAINT [PK_CCAgua] PRIMARY KEY CLUSTERED (
 	[PRIMARY] 
 GO
 
+-----* Script nueva columna [CCAgua] *-----
+
+ALTER TABLE [dbo].[CCAgua]
+ADD [idMovimientoConsumo] [int] NOT NULL
+GO
+
 -----* Script ligar tablas [CCAgua]|[ConceptoCobro] *-----
 
 ALTER TABLE [dbo].[CCAgua] WITH CHECK ADD CONSTRAINT [FK_CCAgua]
@@ -433,4 +439,179 @@ REFERENCES [dbo].[Usuario] ([id])
 GO
 
 ALTER TABLE [dbo].[Propiedades] CHECK CONSTRAINT [FK_Usuario_Prop]
+GO
+
+
+-----/ Script creacion de tablas [TipoMovimiento] /-----
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MovimientoConsumo](
+
+ [id] [int] IDENTITY(1,1) NOT NULL,
+ [Fecha] [date] NOT NULL,
+ [FechaVencimiento] [date] NOT NULL,
+ [Monto] [int] NOT NULL,
+ [SaldoAPagar] [int] NOT NULL,
+ [idTipoMovimiento] [int] NOT NULL
+
+CONSTRAINT [PK_MovimientoConsumo] PRIMARY KEY CLUSTERED (
+
+	[id] ASC
+
+) WITH (
+
+	PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF,
+	ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF
+
+) ON
+	[PRIMARY] 
+) ON 
+	[PRIMARY] 
+GO
+
+-----/ Script creacion de tablas [TipoMovimiento] /-----
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TipoMovimiento](
+
+ [id] [int] IDENTITY(1,1) NOT NULL,
+ [Nombre] [varchar] (128) NOT NULL
+
+CONSTRAINT [PK_TipoMovimiento] PRIMARY KEY CLUSTERED (
+
+	[id] ASC
+
+) WITH (
+
+	PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF,
+	ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF
+
+) ON
+	[PRIMARY] 
+) ON 
+	[PRIMARY] 
+GO
+
+
+-----* Script ligar tablas [MontoMovimiento]|[TipoMovimiento] *-----
+
+ALTER TABLE [dbo].[MovimientoConsumo] WITH CHECK ADD CONSTRAINT [FK_Tipo_Mov]
+FOREIGN KEY([idTipoMovimiento])
+REFERENCES [dbo].[TipoMovimiento] ([id])
+GO
+
+ALTER TABLE [dbo].[MovimientoConsumo] CHECK CONSTRAINT [FK_Tipo_Mov]
+GO
+
+-----* Script ligar tablas [CCAgua]|[MovimientoConsumo] *-----
+
+ALTER TABLE [dbo].[CCAgua] WITH CHECK ADD CONSTRAINT [FK_Movimiento_Consumo]
+FOREIGN KEY([idMovimientoConsumo])
+REFERENCES [dbo].[MovimientoConsumo] ([id])
+GO
+
+ALTER TABLE [dbo].[CCAgua] CHECK CONSTRAINT [FK_Movimiento_Consumo]
+GO
+
+
+-----/ Script creacion tablas [DetalleCC] /-----
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DetalleCC](
+
+ [id] [int] IDENTITY(1,1) NOT NULL,
+ [Nombre] [varchar] (128) NOT NULL,
+ [idDetalleCCAgua] [int] NOT NULL
+
+CONSTRAINT [PK_DetalleCC] PRIMARY KEY CLUSTERED (
+
+	[id] ASC
+
+) WITH (
+
+	PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF,
+	ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF
+
+) ON
+	[PRIMARY] 
+) ON 
+	[PRIMARY] 
+GO
+
+-----/ Script creacion tablas [DetalleCCAgua]  /-----
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DetalleCCAgua](
+
+ [id] [int] IDENTITY(1,1) NOT NULL,
+ [idMovimientoConsumo] [int] NOT NULL
+
+CONSTRAINT [PK_DetalleCCAgua] PRIMARY KEY CLUSTERED (
+
+	[id] ASC
+
+) WITH (
+
+	PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF,
+	ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF
+
+) ON
+	[PRIMARY] 
+) ON 
+	[PRIMARY] 
+GO
+
+
+-----* Script ligar tablas [DetalleCC]|[DetalleCCAgua] *-----
+
+ALTER TABLE [dbo].[DetalleCC] WITH CHECK ADD CONSTRAINT [FK_Detalle_Agua]
+FOREIGN KEY([idDetalleCCAgua])
+REFERENCES [dbo].[DetalleCCAgua] ([id])
+GO
+
+ALTER TABLE [dbo].[DetalleCC] CHECK CONSTRAINT [FK_Detalle_Agua]
+GO
+
+-----/ Añadir nueva conexion [Factura] /-----
+
+ALTER TABLE [dbo].[Factura]
+ADD [idDetalleCC] [int] NOT NULL
+GO
+
+-----* Script ligar tablas [Factura]|[DetalleCC] *-----
+
+ALTER TABLE [dbo].[Factura] WITH CHECK ADD CONSTRAINT [FK_Detalle_CC]
+FOREIGN KEY([idDetalleCC])
+REFERENCES [dbo].[DetalleCC] ([id])
+GO
+
+ALTER TABLE [dbo].[DetalleCC] CHECK CONSTRAINT [FK_Detalle_CC]
+GO
+
+-----/ Añadir nueva conexion [MovimientoConsumo] /-----
+
+ALTER TABLE [DetalleCCAgua]
+ADD [idMovimientoConsumo] [int] NOT NULL
+GO
+
+-----* Script ligar tablas [DetalleCCAgua]|[MovimientoConsumo] *-----
+
+ALTER TABLE [DetalleCCAgua] WITH CHECK ADD CONSTRAINT [FK_Movimiento_Agua]
+FOREIGN KEY ([idMovimientoConsumo])
+REFERENCES [dbo].[MovimientoConsumo] ([id])
 GO
