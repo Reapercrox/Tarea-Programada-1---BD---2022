@@ -313,8 +313,7 @@ GO
 CREATE TABLE [dbo].[ConceptoCobro](
 
  [id] [int] IDENTITY(1,1) NOT NULL,
- [Tipo] [varchar] (128) NOT NULL,
- [LapsoRegla] [varchar] (128) NOT NULL,
+ [idPeriodoMonto] [int]  NOT NULL,
 
 CONSTRAINT [PK_ConceptoCobro] PRIMARY KEY CLUSTERED (
 
@@ -605,13 +604,160 @@ GO
 
 -----/ Añadir nueva conexion [MovimientoConsumo] /-----
 
-ALTER TABLE [DetalleCCAgua]
+ALTER TABLE [dbo].[DetalleCCAgua]
 ADD [idMovimientoConsumo] [int] NOT NULL
 GO
 
 -----* Script ligar tablas [DetalleCCAgua]|[MovimientoConsumo] *-----
 
-ALTER TABLE [DetalleCCAgua] WITH CHECK ADD CONSTRAINT [FK_Movimiento_Agua]
+ALTER TABLE [dbo].[DetalleCCAgua] WITH CHECK ADD CONSTRAINT [FK_Movimiento_Agua]
 FOREIGN KEY ([idMovimientoConsumo])
 REFERENCES [dbo].[MovimientoConsumo] ([id])
+GO
+
+ALTER TABLE [dbo].[DetalleCCAgua] CHECK CONSTRAINT [FK_Movimiento_Agua]
+GO
+
+-----/ Añadir nueva conexion [Factura] /-----
+
+ALTER TABLE [Factura]
+ADD [idTipoMedioPago] [int] NOT NULL
+GO
+
+-----/ Script creacion tablas [MedioPago]  /-----
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MedioPago](
+
+ [id] [int] IDENTITY(1,1) NOT NULL,
+ [Tipo] [varchar] (128) NOT NULL
+
+CONSTRAINT [PK_MedioPago] PRIMARY KEY CLUSTERED (
+
+	[id] ASC
+
+) WITH (
+
+	PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF,
+	ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF
+
+) ON
+	[PRIMARY] 
+) ON 
+	[PRIMARY] 
+GO
+
+
+-----* Script ligar tablas [Factura]|[MedioPago] *-----
+
+ALTER TABLE [dbo].[Factura] WITH CHECK ADD CONSTRAINT [FK_Medio_Pago]
+FOREIGN KEY([idTipoMedioPago])
+REFERENCES [dbo].[MedioPago] ([id])
+GO
+
+ALTER TABLE [dbo].[Factura] CHECK CONSTRAINT [FK_Medio_Pago]
+GO
+
+
+-----/ Añadir nueva conexion [ConceptoCobro] /-----
+
+ALTER TABLE [dbo].[ConceptoCobro]
+ADD [idPeriodoMonto] [int] NOT NULL
+GO
+
+-----/ Script creacion tablas [PeriodoMontoCC]  /-----
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PeriodoMontoCC](
+
+ [id] [int] IDENTITY(1,1) NOT NULL,
+ [Nombre] [varchar] (128) NOT NULL
+
+CONSTRAINT [PK_PeriodoMonto] PRIMARY KEY CLUSTERED (
+
+	[id] ASC
+
+) WITH (
+
+	PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF,
+	ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF
+
+) ON
+	[PRIMARY] 
+) ON 
+	[PRIMARY] 
+GO
+
+-----* Script ligar tablas [ConceptoCobro]|[PeriodoMontoCC] *-----
+
+ALTER TABLE [dbo].[ConceptoCobro] WITH CHECK ADD CONSTRAINT [FK_Periodo_Monto_CC]
+FOREIGN KEY([idPeriodoMonto])
+REFERENCES [dbo].[PeriodoMontoCC] ([id])
+GO
+
+ALTER TABLE [dbo].[ConceptoCobro] CHECK CONSTRAINT [FK_Periodo_Monto_CC]
+GO
+
+
+-----/ Añadir nueva conexion [ConceptoCobro] /-----
+
+ALTER TABLE [dbo].[ConceptoCobro]
+ADD [Nombre] [varchar] (128) NOT NULL,
+	[ValorMinimo] [int],
+	[ValorMinimoM3] [int],
+	[ValorM3] [int],
+	[ValorPorcentual] [float],
+	[ValorFijo] [int],
+	[ValorM2Minimo] [int],
+	[ValorTractosM2] [int],
+	[ValorFijoM3Adicional] [int],
+	[idTipoMonto] [int] NOT NULL
+GO
+
+-----/ Script creacion tablas [TipoMontoCC]  /-----
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TipoMontoCC](
+
+ [id] [int] IDENTITY(1,1) NOT NULL,
+ [Nombre] [varchar] (128) NOT NULL
+
+CONSTRAINT [PK_TipoMonto] PRIMARY KEY CLUSTERED (
+
+	[id] ASC
+
+) WITH (
+
+	PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF,
+	ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF
+
+) ON
+	[PRIMARY] 
+) ON 
+	[PRIMARY] 
+GO
+
+-----/ Añadir nueva conexion [ConceptoCobro] /-----
+
+ALTER TABLE [dbo].[ConceptoCobro]
+ADD [idTipoMonto] [int]
+GO
+
+-----* Script ligar tablas [ConceptoCobro]|[PeriodoMontoCC] *-----
+
+ALTER TABLE [dbo].[ConceptoCobro] WITH CHECK ADD CONSTRAINT [FK_Tipo_Monto_CC]
+FOREIGN KEY([idTipoMonto])
+REFERENCES [dbo].[TipoMontoCC] ([id])
+GO
+
+ALTER TABLE [dbo].[ConceptoCobro] CHECK CONSTRAINT [FK_Tipo_Monto_CC]
 GO
