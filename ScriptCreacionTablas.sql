@@ -119,15 +119,14 @@ GO
 CREATE TABLE [dbo].[Propiedades](
 
  [id] [int] IDENTITY(1,1) NOT NULL,
- [idPropiedadesxPersona] [int] NOT NULL,
  [NumeroFinca] [int] NOT NULL,
  [Area] [int] NOT NULL,
- [ValorFiscal] [money] NOT NULL,
  [idTipoUsoSuelo] [int] NOT NULL,
  [idTipoPropiedad] [int] NOT NULL,
- [ValorPropiedad] [money] NOT NULL,
+ [NumeroMedidor] [int] NOT NULL,
+ [ValorFiscal] [money] NOT NULL,
  [FechaRegistro] [date] NOT NULL,
- 
+ [idPropiedadesxPersona] [int] NOT NULL,
 
 CONSTRAINT [PK_Propiedades] PRIMARY KEY CLUSTERED (
 
