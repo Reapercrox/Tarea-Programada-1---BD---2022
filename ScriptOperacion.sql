@@ -95,6 +95,22 @@ SET @FechaFin  = (SELECT MAX(f.FechaOperacion)
 SET @diaFlag = 1
 
 
+DELETE FROM dbo.Persona
+DBCC CHECKIDENT ('TareaProgramada2.dbo.Persona', RESEED, 0)
+
+DELETE FROM dbo.Propiedades
+DBCC CHECKIDENT ('TareaProgramada2.dbo.Propiedades', RESEED, 0)
+
+DELETE FROM dbo.PropiedadesxPersona
+DBCC CHECKIDENT ('TareaProgramada2.dbo.PropiedadesxPersona', RESEED, 0)
+
+DELETE FROM dbo.Usuario
+DBCC CHECKIDENT ('TareaProgramada2.dbo.Usuario', RESEED, 0)
+
+
+SELECT * FROM dbo.TipoIdentificacion
+
+
 WHILE (@FechaItera < @FechaFin)
 BEGIN
 	
@@ -115,11 +131,12 @@ BEGIN
 		T.Objeto.value('@NumeroFinca','int') as NumeroFinca,
 		T.Objeto.value('@MetrosCuadrados','int') as Area,
 		T.Objeto.value('@tipoUsoPropiedad','varchar(128)') as TipoUsoSuelo,
-		T.Objeto.value('@tipoUsoPropiedad','varchar(128)') as TipoPropiedad,
+		T.Objeto.value('@tipoZonaPropiedad','varchar(128)') as TipoPropiedad,
 		T.Objeto.value('@NumeroMedidor','int') as NumeroMedidor,
 		T.Objeto.value('@ValorFiscal','bigint') as ValorFiscal
 	FROM
 		@datosXml.nodes('Datos/Operacion[@Fecha = sql:variable("@FechaItera")]/Propiedades/Propiedad') as T(Objeto);
+
 
 
 	INSERT INTO @PersonasXPropiedadesInsertar
@@ -160,7 +177,7 @@ BEGIN
 
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
-	INSERT dbo.Persona ([Nombre],[idTipoIdentificacion],[NumeroIdentificacion],[Telefono],[Celular],[Email])
+	INSERT INTO dbo.Persona ([Nombre],[idTipoIdentificacion],[NumeroIdentificacion],[Telefono],[Celular],[Email])
 	SELECT
 		E.Nombre,
 		TI.id as idTipoIdentificacion,
@@ -169,14 +186,15 @@ BEGIN
 		E.Telefono2,
 		E.Email
 	FROM
-		@PersonasAInsertar E, [dbo].[TipoIdentificacion] TI
+		[dbo].[TipoIdentificacion] TI, @PersonasAInsertar E
 	WHERE
-		E.TipoIdentificacion = TI.Tipo
+		 TI.Tipo = E.TipoIdentificacion
+	
 
 	SELECT * FROM [dbo].[Persona]
 
 
-	INSERT [dbo].[Propiedades] ([NumeroFinca],[Area],[idTipoUsoSuelo],[idTipoPropiedad],[NumeroMedidor],[ValorFiscal])
+	INSERT INTO [dbo].[Propiedades] ([NumeroFinca],[Area],[idTipoUsoSuelo],[idTipoPropiedad],[NumeroMedidor],[ValorFiscal])
 	SELECT
 		E.NumeroFinca,
 		E.Area,
@@ -185,17 +203,20 @@ BEGIN
 		E.NumeroMedidor,
 		E.ValorFiscal
 	FROM
-		@PropiedadesAInsertar E, [dbo].[TipoUsoSuelo] TS, [dbo].[TipoPropiedad] TP
+		[dbo].[TipoUsoSuelo] TS, [dbo].[TipoPropiedad] TP, @PropiedadesAInsertar E
 	WHERE
-		E.TipoUsoSuelo = TS.TipoUsoSuelo AND E.TipoPropiedad = TP.Nombre
+		TP.Nombre = E.TipoUsoSuelo AND TS.TipoUsoSuelo = E.TipoPropiedad -----HAY QUE CAMBIAR EL ORDEN
+
+	
+
 
 	SELECT * FROM [dbo].[Propiedades]
 
  --------AQUI INSERT PropiedadesXPersonas--------
 
 	DECLARE @TipoAsocPP VARCHAR (128)
-	SELECT @TipoAsocPP AS [@PersonasXPropiedadesInsertar.TipoAsociacion]
-
+	SELECT @TipoAsocPP = TipoAsociacion
+	FROM @PersonasXPropiedadesInsertar
 
 
 	IF (@TipoAsocPP = 'Agregar')
@@ -220,21 +241,51 @@ BEGIN
 		WHERE
 			P.idPropiedadesxPersona = PP.id AND A.NumeroFinca = P.NumeroFinca
 	END
-	ELSE
+	ELSE IF (@TipoAsocPP = 'Eliminar')
 	BEGIN
-		UPDATE [dbo].[PropiedadesxPersona]
-		SET
-			FechaFin = @FechaItera
+		IF(NOT EXISTS(SELECT 1 FROM [dbo].[PropiedadesxPersona]))
+		BEGIN
+			INSERT INTO [dbo].[PropiedadesxPersona] ([idPersona],[FechaInicio],[FechaFin])
+		SELECT
+			P.id as idPersona,
+			@FechaItera,
+			@FechaItera
 		FROM
-			[dbo].[PropiedadesxPersona] PP INNER JOIN [dbo].[Persona] P ON P.id = PP.idPersona 
-			INNER JOIN [dbo].[Propiedades] PR ON PR.idPropiedadesxPersona = PP.id
+			[dbo].[Persona] P INNER JOIN @PersonasXPropiedadesInsertar A ON A.ValorDocumentoIdentidad = P.NumeroIdentificacion
+			INNER JOIN [dbo].[Propiedades] PR ON A.NumeroFinca = PR.NumeroFinca
 		WHERE
-			P.id = PP.idPersona AND PR.idPropiedadesxPersona = PP.id
+			A.ValorDocumentoIdentidad = P.NumeroIdentificacion AND A.NumeroFinca = PR.NumeroFinca
+
+		END
+		ELSE
+		BEGIN
+			UPDATE [dbo].[PropiedadesxPersona]
+			SET
+				FechaFin = @FechaItera
+			FROM
+				[dbo].[PropiedadesxPersona] PP INNER JOIN [dbo].[Persona] P ON P.id = PP.idPersona 
+				INNER JOIN [dbo].[Propiedades] PR ON PR.idPropiedadesxPersona = PP.id
+			WHERE
+				P.id = PP.idPersona AND PR.idPropiedadesxPersona = PP.id
+		END
 	END
 
 	SELECT * FROM [dbo].[PropiedadesxPersona]
 
-	SET @FechaItera = @FechaFin
+
+	INSERT INTO [dbo].[Usuario] ([NombreUsuario],[Password],[TipoUsuario])
+	SELECT
+		E.Username,
+		E.Password,
+		E.TipoUsuario
+	FROM
+		@UsuarioOperacion E INNER JOIN [dbo].[Persona] P ON E.ValorDocumentoIdentidad = P.NumeroIdentificacion
+
+	SELECT * FROM Usuario
+
+
+
+	SET @FechaItera = DATEADD(DAY,1,@FechaItera)
 END
 
 		
