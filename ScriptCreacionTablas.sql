@@ -237,6 +237,7 @@ CREATE TABLE [dbo].[Usuario](
  [NombreUsuario] [varchar] (128) NOT NULL,
  [Password] [varchar] (128) NOT NULL,
  [TipoUsuario] [varchar] (128) NOT NULL,
+ [idPersona] [int]
 
 CONSTRAINT [PK_Usuario] PRIMARY KEY CLUSTERED (
 
@@ -255,12 +256,12 @@ GO
 
 -----* Script ligar tablas [Usuario]|[Persona] *-----
 
-ALTER TABLE [dbo].[Usuario] WITH CHECK ADD CONSTRAINT [FK_Usuario]
-FOREIGN KEY([id])
+ALTER TABLE [dbo].[Usuario] WITH CHECK ADD CONSTRAINT [FK_Usuario_Persona]
+FOREIGN KEY([idPersona])
 REFERENCES [dbo].[Persona] ([id])
 GO
 
-ALTER TABLE [dbo].[Usuario] CHECK CONSTRAINT [FK_Usuario]
+ALTER TABLE [dbo].[Usuario] CHECK CONSTRAINT [FK_Usuario_Persona]
 GO
 
 
@@ -312,7 +313,7 @@ GO
 CREATE TABLE [dbo].[ConceptoCobro](
 
  [id] [int] IDENTITY(1,1) NOT NULL,
- [idPeriodoMonto] [int]  NOT NULL,
+ [idPeriodoMonto] [int]  NOT NULL
 
 CONSTRAINT [PK_ConceptoCobro] PRIMARY KEY CLUSTERED (
 
@@ -337,6 +338,28 @@ REFERENCES [dbo].[ConceptoCobro] ([id])
 GO
 
 ALTER TABLE [dbo].[PropiedadxConceptoCobro] CHECK CONSTRAINT [FK_CC]
+GO
+
+
+-----/ Añadir nueva conexion [ConceptoCobro] /-----
+
+ALTER TABLE [dbo].[ConceptoCobro]
+ADD [idPeriodoMonto] [int] NOT NULL
+GO
+
+-----/ Añadir nueva conexion [ConceptoCobro] /-----
+
+ALTER TABLE [dbo].[ConceptoCobro]
+ADD [Nombre] [varchar] (128) NOT NULL,
+	[ValorMinimo] [int],
+	[ValorMinimoM3] [int],
+	[ValorM3] [int],
+	[ValorPorcentual] [float],
+	[ValorFijo] [int],
+	[ValorM2Minimo] [int],
+	[ValorTractosM2] [int],
+	[ValorFijoM3Adicional] [int],
+	[idTipoMonto] [int] NOT NULL
 GO
 
 -----/ Script creacion de tablas [CCAgua] /-----
@@ -454,7 +477,9 @@ CREATE TABLE [dbo].[MovimientoConsumo](
  [FechaVencimiento] [date] NOT NULL,
  [Monto] [int] NOT NULL,
  [SaldoAPagar] [int] NOT NULL,
- [idTipoMovimiento] [int] NOT NULL
+ [NumeroMedidor] [int] NOT NULL,
+ [idTipoMovimiento] [int] NOT NULL,
+ [idCCAgua][int] NOT NULL
 
 CONSTRAINT [PK_MovimientoConsumo] PRIMARY KEY CLUSTERED (
 
@@ -470,6 +495,9 @@ CONSTRAINT [PK_MovimientoConsumo] PRIMARY KEY CLUSTERED (
 ) ON 
 	[PRIMARY] 
 GO
+
+
+
 
 -----/ Script creacion de tablas [TipoMovimiento] /-----
 
@@ -511,14 +539,13 @@ GO
 
 -----* Script ligar tablas [CCAgua]|[MovimientoConsumo] *-----
 
-ALTER TABLE [dbo].[CCAgua] WITH CHECK ADD CONSTRAINT [FK_Movimiento_Consumo]
-FOREIGN KEY([idMovimientoConsumo])
-REFERENCES [dbo].[MovimientoConsumo] ([id])
+ALTER TABLE [dbo].[MovimientoConsumo] WITH CHECK ADD CONSTRAINT [FK_Concepto_CAgua]
+FOREIGN KEY([idCCAgua])
+REFERENCES [dbo].[CCAgua] ([id])
 GO
 
-ALTER TABLE [dbo].[CCAgua] CHECK CONSTRAINT [FK_Movimiento_Consumo]
+ALTER TABLE [dbo].[MovimientoConsumo] CHECK CONSTRAINT [FK_Concepto_CAgua]
 GO
-
 
 -----/ Script creacion tablas [DetalleCC] /-----
 
@@ -661,11 +688,7 @@ ALTER TABLE [dbo].[Factura] CHECK CONSTRAINT [FK_Medio_Pago]
 GO
 
 
------/ Añadir nueva conexion [ConceptoCobro] /-----
 
-ALTER TABLE [dbo].[ConceptoCobro]
-ADD [idPeriodoMonto] [int] NOT NULL
-GO
 
 -----/ Script creacion tablas [PeriodoMontoCC]  /-----
 
@@ -704,20 +727,7 @@ ALTER TABLE [dbo].[ConceptoCobro] CHECK CONSTRAINT [FK_Periodo_Monto_CC]
 GO
 
 
------/ Añadir nueva conexion [ConceptoCobro] /-----
 
-ALTER TABLE [dbo].[ConceptoCobro]
-ADD [Nombre] [varchar] (128) NOT NULL,
-	[ValorMinimo] [int],
-	[ValorMinimoM3] [int],
-	[ValorM3] [int],
-	[ValorPorcentual] [float],
-	[ValorFijo] [int],
-	[ValorM2Minimo] [int],
-	[ValorTractosM2] [int],
-	[ValorFijoM3Adicional] [int],
-	[idTipoMonto] [int] NOT NULL
-GO
 
 -----/ Script creacion tablas [TipoMontoCC]  /-----
 
