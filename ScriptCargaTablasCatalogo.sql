@@ -2,11 +2,33 @@
 
 USE [TareaProgramada2]
 
-
------/ Carga de datos [Tipo Movimiento] /-----
+DELETE [dbo].[PeriodoMontoCC]
+DBCC CHECKIDENT ('TareaProgramada2.dbo.PeriodoMontoCC', RESEED, 0)
 
 DELETE [dbo].[TipoMovimiento]
 DBCC CHECKIDENT ('TareaProgramada2.dbo.TipoMovimiento', RESEED, 0)
+
+DELETE [dbo].[TipoPropiedad]
+DBCC CHECKIDENT ('TareaProgramada2.dbo.TipoPropiedad', RESEED, 0)
+
+DELETE [dbo].[TipoUsoSuelo]
+DBCC CHECKIDENT ('TareaProgramada2.dbo.TipoUsoSuelo', RESEED, 0)
+
+DELETE [dbo].[TipoIdentificacion]
+DBCC CHECKIDENT ('TareaProgramada2.dbo.TipoIdentificacion', RESEED, 0)
+
+DELETE [dbo].[MedioPago]
+DBCC CHECKIDENT ('TareaProgramada2.dbo.MedioPago', RESEED, 0)
+
+DELETE [dbo].[TipoMontoCC]
+DBCC CHECKIDENT ('TareaProgramada2.dbo.TipoMontoCC', RESEED, 0)
+
+DELETE [dbo].[ConceptoCobro]
+DBCC CHECKIDENT ('TareaProgramada2.dbo.ConceptoCobro', RESEED, 0)
+
+-----/ Carga de datos [Tipo Movimiento] /-----
+
+
 
 INSERT INTO [dbo].[TipoMovimiento]
 SELECT
@@ -26,8 +48,7 @@ GO
 
 -----/ Carga de datos [Tipo Propiedad] /-----
 
-DELETE [dbo].[TipoPropiedad]
-DBCC CHECKIDENT ('TareaProgramada2.dbo.TipoPropiedad', RESEED, 0)
+
 
 INSERT INTO [dbo].[TipoPropiedad]
 SELECT
@@ -47,8 +68,7 @@ GO
 
 -----/ Carga de datos [TipoUsoSuelo] /-----
 
-DELETE [dbo].[TipoUsoSuelo]
-DBCC CHECKIDENT ('TareaProgramada2.dbo.TipoUsoSuelo', RESEED, 0)
+
 
 INSERT INTO [dbo].[TipoUsoSuelo]
 SELECT
@@ -68,8 +88,7 @@ GO
 
 -----/ Carga de datos [TipoDocumentoIdentidad] /-----
 
-DELETE [dbo].[TipoIdentificacion]
-DBCC CHECKIDENT ('TareaProgramada2.dbo.TipoIdentificacion', RESEED, 0)
+
 
 INSERT INTO [dbo].[TipoIdentificacion]
 SELECT
@@ -89,8 +108,7 @@ GO
 
 -----/ Carga de datos [MedioPago] /-----
 
-DELETE [dbo].[MedioPago]
-DBCC CHECKIDENT ('TareaProgramada2.dbo.MedioPago', RESEED, 0)
+
 
 INSERT INTO [dbo].[MedioPago]
 SELECT
@@ -112,8 +130,7 @@ GO
 
 -----/ Carga de datos [PeridoPago] /-----
 
-DELETE [dbo].[PeriodoMontoCC]
-DBCC CHECKIDENT ('TareaProgramada2.dbo.PeriodoMontoCC', RESEED, 0)
+
 
 INSERT INTO [dbo].[PeriodoMontoCC]
 SELECT
@@ -133,8 +150,7 @@ GO
 
 -----/ Carga de datos [TipoMontoCC] /-----
 
-DELETE [dbo].[TipoMontoCC]
-DBCC CHECKIDENT ('TareaProgramada2.dbo.TipoMontoCC', RESEED, 0)
+
 
 INSERT INTO [dbo].[TipoMontoCC]
 SELECT
@@ -155,8 +171,7 @@ GO
 
 -----/ Carga de datos [TipoCC] /-----
 
-DELETE [dbo].[ConceptoCobro]
-DBCC CHECKIDENT ('TareaProgramada2.dbo.ConceptoCobro', RESEED, 0)
+
 
 INSERT INTO [dbo].[ConceptoCobro]
 SELECT
