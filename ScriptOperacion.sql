@@ -232,8 +232,9 @@ BEGIN
 		SET
 			idPropiedadesxPersona= PP.id
 		FROM
-			[dbo].[PropiedadesxPersona] PP INNER JOIN [dbo].[Propiedades] P ON P.idPropiedadesxPersona = PP.id 
-			INNER JOIN @PersonasXPropiedadesInsertar A ON A.NumeroFinca = P.NumeroFinca
+			[dbo].[PropiedadesxPersona] PP ,@PersonasXPropiedadesInsertar A, [dbo].[Propiedades] P
+		WHERE
+			A.NumeroFinca = P.NumeroFinca AND PP.FechaInicio = @FechaItera
 
 	END
 	ELSE
@@ -356,18 +357,17 @@ BEGIN
 
 -------------------------------------------------------------------------LECTURAS
 
-	INSERT INTO [dbo].[MovimientoConsumo]([Fecha],[NumeroMedidor],[idTipoMovimiento],[SaldoAPagar],[Monto],[idCCAgua])
+	INSERT INTO [dbo].[MovimientoConsumo]([Fecha],[NumeroMedidor],[idTipoMovimiento],[SaldoAPagar],[Monto])
 	SELECT
 		@FechaItera,
 		E.NumeroMedidor,
 		TM.id as idTipoMovimiento,
 		E.Valor,
-		E.Valor,
-		CC.id
+		E.Valor
 	FROM
-		[dbo].[TipoMovimiento] TM, @Lecturas E, [dbo].[CCAgua] CC
+		[dbo].[TipoMovimiento] TM, @Lecturas E
 	WHERE
-		E.TipoMovimiento = TM.Nombre AND CC.NumeroMedidor = E.NumeroMedidor
+		E.TipoMovimiento = TM.Nombre
 
 
 	DELETE FROM @Lecturas
